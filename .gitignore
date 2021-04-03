@@ -21,3 +21,10 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+/flask-backend/venv
+/flask-backend/classifier.sav
+/flask-backend/cv.sav
+
+
+
