@@ -26,5 +26,8 @@ yarn-error.log*
 /flask-backend/classifier.sav
 /flask-backend/cv.sav
 
+/putty_key.ppk
+/test.pem
+
 
 

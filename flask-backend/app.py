@@ -3,8 +3,9 @@ from collections import defaultdict
 import string
 import heapq
 import spacy
-import neuralcoref
+# import neuralcoref
 import nltk
+nltk.download('punkt')
 from nltk.tokenize import word_tokenize,sent_tokenize
 
 import pickle
@@ -24,7 +25,7 @@ from flask_cors import CORS
 nlp=spacy.load("en_core_web_md")
 
 #graph summarizer - summarizer 1
-neuralcoref.add_to_pipe(nlp)
+# neuralcoref.add_to_pipe(nlp)
 
 def tokenizer(text):
     sentence,word_sent=[],[]
@@ -69,7 +70,7 @@ def sentence_extraction(graph,word_sent,sentence):
 
 cv = pickle.load(open('./cv.sav','rb'))
 model = pickle.load(open('./classifier.sav','rb'))
-names = ['cs','math','physics','stat']
+names = ['Computer Science','Maths','Physics','Statistics']
 
 def classify(text):
     text = cv.transform(text)
@@ -186,33 +187,31 @@ def generate_graph_summary():
 @app.route('/api/wordfreq_summary',methods=['POST'])
 def generate_wordfreq_summary():
     if request.method == 'POST':
+            try: 
+                data = request.get_json()
+                n = data['sentences']           #number of sentences - user input
+                url = data['url']
+                text = extract_text_url(url)
+                n = int(n)
+                word_freq_summary = nltk_summarizer(text,n)
+
+                category = classify([word_freq_summary])
+
+                db.user_collection.insert_one({'subject':category,'summary':word_freq_summary})
+                
+                final_result = {
+                    'summary' : word_freq_summary, 'category' :category
+                }
+
+                return jsonify(final_result)
             
-            data = request.get_json()
-            n = data['sentences']           #number of sentences - user input
-            url = data['url']
-            print(url)
-            text = extract_text_url(url)
-            n = int(n)
-            word_freq_summary = nltk_summarizer(text,n)
-
-            
-
-            print(classify([word_freq_summary]))
-
-            category = classify([word_freq_summary])
-
-            db.user_collection.insert_one({'subject':category,'summary':word_freq_summary})
-
-            return jsonify(word_freq_summary)
-
-            print('Saved in db')
-
-            
-            
-
+            except Exception as e:
+                return str(e)
 
 
             
+            
+
 
 #get data from the database
 @app.route('/api/getdata',methods=['GET'])

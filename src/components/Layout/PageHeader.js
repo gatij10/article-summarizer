@@ -23,9 +23,6 @@ const Title = () => {
           <Menu.Item key='2'>
             <Link to='/nltk'>WF Summarizer</Link>
           </Menu.Item>
-          <Menu.Item key='3'>
-            <Link to='/graph'>GB Summarizer</Link>
-          </Menu.Item>
         </Menu>
       </Header>
     </div>

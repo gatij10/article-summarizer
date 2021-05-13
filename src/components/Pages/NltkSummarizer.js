@@ -1,16 +1,15 @@
-import React, { useState } from 'react';
-import { Input } from 'antd';
-import { Button } from 'antd';
-import { Col, Row } from 'antd';
-import axios from 'axios';
-import { Card } from 'antd';
-import Loading from '../Layout/Loading';
+import React, { useState } from "react";
+
+import { Col, Row, Card, Button, Input } from "antd";
+import axios from "axios";
+import Loading from "../Layout/Loading";
 
 const NltkSummarizer = () => {
-  const [url, setUrl] = useState('');
+  const [url, setUrl] = useState("");
   const [sentences, setSentences] = useState(0);
-  const [summary, setSummary] = useState('');
+  const [summary, setSummary] = useState("");
   const [loading, setLoading] = useState(false);
+  const [category, setCategory] = useState("");
 
   const onUrlChange = (e) => {
     setUrl(e.target.value);
@@ -24,16 +23,27 @@ const NltkSummarizer = () => {
     setLoading(true);
     const config = {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     };
+
     const res = await axios.post(
-      'http://localhost:5000/api/wordfreq_summary',
+      "http://localhost:5000/api/wordfreq_summary",
       { url, sentences },
       config
     );
+
+
+ 
     const data = res.data;
-    setSummary(data);
+
+    if(data.length === undefined) {
+      setSummary(data.summary);
+      setCategory(data.category);
+    }else{
+      setSummary(data);
+    }
+
     setLoading(false);
   };
 
@@ -49,10 +59,10 @@ const NltkSummarizer = () => {
               <h3>Enter Link</h3>
             </label>
             <Input
-              type='url'
-              name='url'
+              type="url"
+              name="url"
               value={url}
-              placeholder='Enter Link...'
+              placeholder="Enter Link..."
               onChange={onUrlChange}
               required
             />
@@ -66,12 +76,12 @@ const NltkSummarizer = () => {
               <h3>Enter number of sentences</h3>
             </label>
             <Input
-              type='number'
-              name='number'
+              type="number"
+              name="number"
               value={sentences}
-              placeholder='Enter number...'
+              placeholder="Enter number..."
               onChange={onNumberChange}
-              min='0'
+              min={1}
               required
             />
           </Col>
@@ -79,7 +89,7 @@ const NltkSummarizer = () => {
         <br />
         <Row>
           <Col span={12} offset={6}>
-            <Button type='primary' onClick={generateSummary} block>
+            <Button type="primary" onClick={generateSummary} block>
               Generate Summary
             </Button>
           </Col>
@@ -95,9 +105,7 @@ const NltkSummarizer = () => {
       <Row>
         {loading === false ? (
           <Col span={12} offset={6}>
-            <Card>
-              <p>{summary}</p>
-            </Card>
+            <Card title={`Category - ${category}`}>{summary}</Card>
           </Col>
         ) : (
           <Col span={12} offset={6}>
