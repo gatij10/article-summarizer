@@ -1,0 +1,8 @@
+version: "3"
+
+services:
+  flask-app:
+    build:
+      context: ../DataQuest_nodeapi
+    restart: always
+    network_mode: host
