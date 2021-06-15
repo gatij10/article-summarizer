@@ -1,6 +1,7 @@
 import React from 'react';
-import { Layout, Menu } from 'antd';
+import { Layout, Menu, Image } from 'antd';
 import { Link } from 'react-router-dom';
+import logo from '../../assets/logo512.png'
 
 const Title = () => {
   const { Header } = Layout;
@@ -10,7 +11,9 @@ const Title = () => {
   };
   return (
     <div>
-      <Header>
+      <Header style={{backgroundColor: "black"}}>
+        <Image src={logo} height={50} width={50} style={{float: 'left'}} />
+        <h2 style={{float: 'left', color:"whitesmoke", paddingLeft: "10px"}}>Research Paper Summarizer</h2>
         <Menu
           style={layout}
           theme='dark'
@@ -21,7 +24,7 @@ const Title = () => {
             <Link to='/'>Home</Link>
           </Menu.Item>
           <Menu.Item key='2'>
-            <Link to='/nltk'>WF Summarizer</Link>
+            <Link to='/nltk'>Word Frequency Summarizer</Link>
           </Menu.Item>
         </Menu>
       </Header>

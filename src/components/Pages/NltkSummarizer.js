@@ -34,7 +34,6 @@ const NltkSummarizer = () => {
     );
 
 
- 
     const data = res.data;
 
     if(data.length === undefined) {
@@ -43,7 +42,6 @@ const NltkSummarizer = () => {
     }else{
       setSummary(data);
     }
-
     setLoading(false);
   };
 

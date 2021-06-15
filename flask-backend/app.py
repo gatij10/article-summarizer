@@ -2,70 +2,16 @@ from nltk.corpus import stopwords
 from collections import defaultdict
 import string
 import heapq
-import spacy
-# import neuralcoref
 import nltk
-nltk.download('punkt')
 from nltk.tokenize import word_tokenize,sent_tokenize
-
 import pickle
 import numpy as np
-
 import urllib.request
 import fitz
-
 from bson.json_util import dumps
-
 from flask_pymongo import pymongo
-
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-
-
-nlp=spacy.load("en_core_web_md")
-
-#graph summarizer - summarizer 1
-# neuralcoref.add_to_pipe(nlp)
-
-def tokenizer(text):
-    sentence,word_sent=[],[]
-    stopWords=set(stopwords.words("english"))
-    doc=nlp(text)
-    for sent in doc.sents:
-        sentence.append(sent)
-        words=[]
-        for token in sent :
-            if token.text not in stopWords or token.text not in string.punctuation:
-                if token.pos_=="PRON" and token._.in_coref:
-                    for cluster in token._.coref_clusters:
-                        words.append((cluster.main.text,"NOUN"))
-                if token.pos_=="NOUN" or token.pos_=="PROPN":
-                    words.append((token.text,token.pos_))
-        word_sent.append(words)
-    return sentence,word_sent
-
-
-def graph_building(word_sent):
-    graph=defaultdict(int)
-    for words in word_sent:
-        for i in range(len(words)):
-            for j in range(i+1,len(words)):
-                graph[(words[i],words[j])]+=abs(i-j)
-    for key,values in graph.items():
-        graph[key]=1/(1+values)
-    return graph
-
-def sentence_extraction(graph,word_sent,sentence):
-    noun_score=defaultdict(int)
-    for key,value in graph.items():
-        noun_score[key[0][0]]+=value
-    sent_score=defaultdict(int)
-    for i,words in enumerate(word_sent):
-        for word in words:
-            sent_score[sentence[i].text]+=noun_score[word[0]]
-    summary_sent=heapq.nlargest(10,sent_score,key=sent_score.get)
-    summary_sent = "\n".join(summary_sent)
-    return summary_sent
 
 
 cv = pickle.load(open('./cv.sav','rb'))
@@ -149,40 +95,7 @@ print('DB connected')
 def prit():
     return "Server Started"
 
-#end pont to generate graph summary
-@app.route('/api/graph_summary',methods=['POST'])
-def generate_graph_summary():
-        if request.method == 'POST':
-
-            data = request.get_json()
-            url = data['url']
-            print(url)
-            text = extract_text_url(url)
             
-            #tokenize the text
-            sentence, word_sent = tokenizer(text)
-            
-            #build the graph
-            graph = graph_building(word_sent)
-            
-            #extract the summary
-            graph_summary = sentence_extraction(graph,word_sent,sentence)
-
-            
-
-            print(classify([graph_summary]))
-
-            category = classify([graph_summary])
-            
-            db.user_collection.insert_one({'subject':category,'summary':graph_summary})
-
-            return jsonify(graph_summary)
-
-            print('Saved in db')
-            
-            
-
-
 #end point to generate word frequency summary
 @app.route('/api/wordfreq_summary',methods=['POST'])
 def generate_wordfreq_summary():
@@ -206,11 +119,7 @@ def generate_wordfreq_summary():
                 return jsonify(final_result)
             
             except Exception as e:
-                return str(e)
-
-
-            
-            
+                return "Server Error! Try a different link."
 
 
 #get data from the database

@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Card } from "antd";
-// import { Col, Row } from "antd";
+import { Col, Row, Select, Card } from "antd";
+
+const { Option } = Select;
 
 const SearchSummary = () => {
-  const [text, setText] = useState([]);
+  const [summary, setSummary] = useState([]);
+  const [filteredSummay, setFilteredSummary] = useState([]);
+
+  const categoryList = ['Computer Science', 'Maths', 'Physics', 'Statistics', 'Select Category']
 
   const config = {
     headers: {
@@ -21,30 +25,51 @@ const SearchSummary = () => {
   const getSummary = () => {
     axios.get("http://localhost:5000/api/getdata", config).then((res) => {
       const data = res.data;
-      setText(data);
-      console.log(data);
+      setSummary(data);
+      setFilteredSummary(data)
     });
   };
+
+  const onOptionChange = (option) => {
+    const summaryOption = summary.filter(s => s.subject === option)
+    setFilteredSummary(summaryOption)
+    if (option === "Select Category") {
+      setFilteredSummary(summary)
+    }
+  }
 
   return (
     <div>
       <br />
       <h1>Summary Collection</h1>
 
-      {text.length !== 0 ? (
-        text.map((t) => (
-          <Card key={t.id} >
+      <Row>
+        <Col>
+          <Select style={{ width: 170, borderColor: 'red', paddingLeft: "22px" }} defaultValue="Select Category" onChange={onOptionChange}>
+            {
+              categoryList.map((category, index) =>
+                <Option value={category} key={index}>{category}</Option>
+              )
+            }
+          </Select>
+        </Col>
+      </Row>
+
+
+      {filteredSummay.length !== 0 ? (
+        filteredSummay.map((s, index) => (
+          <Card key={index} >
             <Card
               type="inner"
-              title={`Category - ${t.subject}`}
-              // extra={<a href="#">More</a>}
+              title={`Category - ${s.subject}`}
+              style={{ borderColor: "black" }}
             >
-              {t.summary}
+              {s.summary}
             </Card>
           </Card>
         ))
       ) : (
-        <div>No data available</div>
+        <div>No Data available</div>
       )}
     </div>
   );
