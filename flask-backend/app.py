@@ -53,6 +53,7 @@ def nltk_summarizer(raw_text,n):
                         
     summary_sent=heapq.nlargest(n,sent_scores,key=sent_scores.get)
     sent_summary = "\n".join(summary_sent)
+    print(sent_summary)
     return sent_summary
 
 
@@ -77,7 +78,9 @@ def extract_text_url(url):
         page_ = page_.replace('\n', ' ')
         text_extracted += page_ + ' '
     
+    print(text_extracted)
     return text_extracted
+
 
 
 
@@ -107,6 +110,7 @@ def generate_wordfreq_summary():
                 text = extract_text_url(url)
                 n = int(n)
                 word_freq_summary = nltk_summarizer(text,n)
+                print(word_freq_summary)
 
                 category = classify([word_freq_summary])
 
