@@ -23,7 +23,7 @@ const SearchSummary = () => {
   }, []);
 
   const getSummary = () => {
-    axios.get("http://ec2-13-233-225-63.ap-south-1.compute.amazonaws.com/api/getdata", config).then((res) => {
+    axios.get("http://13.233.225.63/api/getdata", config).then((res) => {
       const data = res.data;
       setSummary(data);
       setFilteredSummary(data)

@@ -28,7 +28,7 @@ const NltkSummarizer = () => {
     };
 
     const res = await axios.post(
-      "http://ec2-13-233-225-63.ap-south-1.compute.amazonaws.com/api/wordfreq_summary",
+      "http://13.233.225.63/api/wordfreq_summary",
       { url, sentences },
       config
     );
